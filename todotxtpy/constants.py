@@ -1,22 +1,6 @@
 """Constants for todotxtpy."""
 
-import enum
-
-
-class PRIORITY(enum.Enum):
-    """Enum for priorities."""
-
-    A = 1
-    B = 2
-    C = 3
-    D = 4
-    E = 5
-    F = 6
-    G = 7
-    H = 8
-
-
-class COLORS:
+class Colors:
     """ANSI escape sequences for colors."""
 
     BLACK = "\033[0;30m"
@@ -41,3 +25,20 @@ class COLORS:
     BOLD = "\033[1m"
     UNDERLINE = "\033[4m"
     ENDC = "\033[0m"
+
+class DefaultConfig:
+    """Default settings."""
+
+    COLOR_PRIORITY_A = Colors.YELLOW
+    COLOR_PRIORITY_B = Colors.BROWN
+    COLOR_PRIORITY_C = Colors.GREEN
+    COLOR_PRIORITY_D = Colors.BLUE
+    COLOR_PRIORITY_E = Colors.CYAN
+    COLOR_PRIORITY_REST = Colors.WHITE
+
+    COLOR_TAG = Colors.LIGHT_BLUE
+    COLOR_DATE = Colors.LIGHT_PURPLE
+    COLOR_NUMBER = Colors.DARK_GREY
+
+    TODO_TXT_PATH = None # Must be overridden
+    DONE_TXT_PATH = None # Must be overridden
