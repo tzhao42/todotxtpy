@@ -3,6 +3,7 @@
 def parse(args):
 
     # match is so nice...
+    # TODO: update with new usecases in readme
     match args:
 
         case ["add", raw_text]:
