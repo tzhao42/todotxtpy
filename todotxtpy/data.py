@@ -1,5 +1,7 @@
 """Data classes for todotxtpy."""
 
+from functools import cmp_to_key
+
 class Task:
     """Simple task class."""
 
@@ -11,7 +13,7 @@ class Task:
         """
 
         # Type hinting
-        self.priority: str
+        self.priority: str # a single letter
         self.text: str
         self.tag: str
         self.creation_date: str
@@ -19,12 +21,25 @@ class Task:
         # Parse line
         tokens = line.split()
 
-        self.priority = tokens.pop(0)[1]
-        assert self.priority.isupper(), "Invalid priority."
-
-        self.creation_date = tokens.pop()
-        assert len(self.creation_date) == 6, "Invalid creation date."
-
+        # Recognized priority
+        first_token = tokens.pop(0)
+        match [l for l in first_token]:
+            case ["(", priority, ")"]:
+                if not priority.isupper():
+                    raise ValueError("Unsupported priority.")
+                
+                self.priority = priority
+            case _:
+                raise ValueError("Unrecognized format.")
+        
+        # Recognize creation date
+        last_token = tokens.pop()
+        if len(last_token) == 6 and last_token.isdecimal():
+            self.creation_date = last_token
+        else:
+            raise ValueError("Unrecognized format.")
+        
+        # Recognize tag, if present
         self.tag = tokens.pop() if tokens[-1][0] == "+" else None
         
         # Dump rest of text in text field
@@ -32,7 +47,7 @@ class Task:
 
 
     def __str__(self) -> str:
-        # This is only used for debuging, actual display is handeled by the app
+        # This is used for saving, display is handeled differently
         ret = ""
         ret += f"({self.priority}) {self.text} "
         if self.tag:
@@ -40,24 +55,80 @@ class Task:
         ret += self.creation_date
         return ret
 
+    def __eq__(self, o: object) -> bool:
+        if isinstance(o, self.__class__):
+            return self.__dict__ == o.__dict__
+        else:
+            return False
+
 
 class TaskList:
     """List of tasks."""
 
-    def __init__(self, path: str) -> None:
+    def __init__(self) -> None:
         """Initialize a TaskList."""
         self.tasks = []
 
     def load(self, path: str) -> None:
-        """Populate TaskList from a compliant todo document specified by path."""
-        pass
+        """Append tasks from file to TaskList."""
+        with open(path, mode="r") as file:
+            lines = file.readlines()
+            for line in lines:
+                task = Task(line.rstrip())
+                self.tasks.append(task)
 
     def save(self, path: str) -> None:
         """Save TaskList to file specified by path.
 
         If file already exists, overwrites file completely.
         """
-        pass
+        with open(path, mode='w') as f:
+            for task in self.tasks:
+                f.write(f"{str(task)}\n")
+
+    def sort(self) -> None:
+        """Sort TaskList in order of priority, creation date, tag, text.
+        
+        Entries without tag come last; otherwise everything is string order.
+        """
+        self.tasks.sort(key=cmp_to_key(self._compare))
+
+    def _compare(self, task1: Task, task2: Task) -> int:
+        """Custom comparator for tasks."""
+
+        # Compare priorities
+        if task1.priority < task2.priority:
+            return -1
+        elif task1.priority > task2.priority:
+            return 1
+
+        # Priorities equal, compare creation date
+        if task1.creation_date < task2.creation_date:
+            return -1
+        elif task1.creation_date > task2.creation_date:
+            return 1
+
+        # Creation dates equal, compare tags
+        if task1.tag and (not task2.tag):
+            return -1
+        elif (not task1.tag) and task2.tag:
+            return 1
+        elif task1.tag and task2.tag:
+            if task1.tag < task2.tag:
+                return -1
+            elif task1.tag > task2.tag:
+                return 1
+
+        # Tags equal, compare text
+        if task1.text < task2.text:
+            return -1
+        elif task1.text > task2.text:
+            return 1
+        
+        # Everything equal
+        return 0
+
+
 
 
 class Config:
@@ -66,30 +137,3 @@ class Config:
     def __init__(self, path: str) -> None:
         """Initialize an Config from a compliant config document."""
         pass
-
-if __name__ == "__main__":
-
-    # Testing
-    rawline = "(A) do lots of epic stuff +todotxtpy 211028"
-    task = Task(rawline)
-    assert str(task) == rawline
-
-    rawline = "(A) do lots of epic stuff for todotxtpy 211028"
-    task = Task(rawline)
-    assert str(task) == rawline
-
-    rawline = "(A) do lots of epic stuff for todotxtpy 21102"
-    try:
-        task = Task(rawline)
-        raise ValueError("Failed test, invalid date got through")
-    except AssertionError:
-        pass
-
-    rawline = "(!) do lots of epic stuff for todotxtpy 211026"
-    try:
-        task = Task(rawline)
-        raise ValueError("Failed test, invalid priority got through")
-    except AssertionError:
-        pass
-
-    print("Tests passed")

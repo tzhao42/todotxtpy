@@ -1,8 +1,6 @@
-from distutils.core import setup
+from setuptools import setup, find_packages
 
 setup(
     name="todotxtpy",
-    version="0.1",
-    packages=["todotxtpy"]
+    packages=find_packages()
 )
-
