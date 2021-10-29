@@ -53,4 +53,3 @@ class DefaultConfig:
     COLOR_TAG = Colors.LIGHT_BLUE
     COLOR_DATE = Colors.LIGHT_PURPLE
     COLOR_NUMBER = Colors.DARK_GREY
-

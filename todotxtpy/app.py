@@ -80,14 +80,3 @@ class TodoApp:
                 display_str += Colors.ENDC
 
             print(display_str)
-
-if __name__ == "__main__":
-
-    import os
-
-    CONFIG_PATH = os.path.join(os.path.expanduser("~"), "Workspace", "todotxtpy", "scratch", "config")
-    TODO_PATH = os.path.join(os.path.expanduser("~"), "Workspace", "todotxtpy", "scratch", "todo.txt")
-
-    app = TodoApp()
-    app.list()
-    app.list(verbose=True)

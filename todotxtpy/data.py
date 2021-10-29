@@ -193,4 +193,3 @@ class Config:
                 return self.color_priority_e
             case _:
                 return self.color_priority_rest
-
