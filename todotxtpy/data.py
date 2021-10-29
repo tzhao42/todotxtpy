@@ -2,6 +2,10 @@
 
 from functools import cmp_to_key
 
+from todotxtpy.constants import DefaultConfig
+from todotxtpy.utils import color_to_color_code
+
+
 class Task:
     """Simple task class."""
 
@@ -44,7 +48,6 @@ class Task:
         
         # Dump rest of text in text field
         self.text = " ".join(tokens)
-
 
     def __str__(self) -> str:
         # This is used for saving, display is handeled differently
@@ -94,7 +97,7 @@ class TaskList:
         self.tasks.sort(key=cmp_to_key(self._compare))
 
     def _compare(self, task1: Task, task2: Task) -> int:
-        """Custom comparator for tasks."""
+        """Custom comparator for sorting tasks."""
 
         # Compare priorities
         if task1.priority < task2.priority:
@@ -129,11 +132,65 @@ class TaskList:
         return 0
 
 
-
-
 class Config:
     """User config."""
 
-    def __init__(self, path: str) -> None:
-        """Initialize an Config from a compliant config document."""
-        pass
+    def __init__(self) -> None:
+        """Initialize a Config from a compliant config document."""
+
+        self.color_priority_a = DefaultConfig.COLOR_PRIORITY_A
+        self.color_priority_b = DefaultConfig.COLOR_PRIORITY_B
+        self.color_priority_c = DefaultConfig.COLOR_PRIORITY_C
+        self.color_priority_d = DefaultConfig.COLOR_PRIORITY_D
+        self.color_priority_e = DefaultConfig.COLOR_PRIORITY_E
+        self.color_priority_rest = DefaultConfig.COLOR_PRIORITY_REST
+
+        self.color_tag = DefaultConfig.COLOR_TAG
+        self.color_date = DefaultConfig.COLOR_DATE
+        self.color_number = DefaultConfig.COLOR_NUMBER
+
+    def load(self, path: str) -> None:
+        """Append tasks from file to TaskList."""
+        with open(path, mode="r") as file:
+            lines = file.readlines()
+            for line in lines:
+                setting = line.rstrip().split()
+                match setting:
+                    case ["COLOR_PRIORITY_A", color]:
+                        self.color_priority_a = color_to_color_code(color)
+                    case ["COLOR_PRIORITY_B", color]:
+                        self.color_priority_b = color_to_color_code(color)
+                    case ["COLOR_PRIORITY_C", color]:
+                        self.color_priority_c = color_to_color_code(color)
+                    case ["COLOR_PRIORITY_D", color]:
+                        self.color_priority_d = color_to_color_code(color)
+                    case ["COLOR_PRIORITY_E", color]:
+                        self.color_priority_e = color_to_color_code(color)
+                    case ["COLOR_PRIORITY_REST", color]:
+                        self.color_priority_rest = color_to_color_code(color)
+                    case ["COLOR_TAG", color]:
+                        self.color_tag = color_to_color_code(color)
+                    case ["COLOR_DATA", color]:
+                        self.color_data = color_to_color_code(color)
+                    case ["COLOR_NUMBER", color]:
+                        self.color_number = color_to_color_code(color)
+                    case _:
+                        print(setting)
+                        raise ValueError("Setting not recognized")
+
+        
+    def priority_to_color_code(self, priority : str) -> str:
+        match priority:
+            case "A":
+                return self.color_priority_a
+            case "B":
+                return self.color_priority_b
+            case "C":
+                return self.color_priority_c
+            case "D":
+                return self.color_priority_d
+            case "E":
+                return self.color_priority_e
+            case _:
+                return self.color_priority_rest
+

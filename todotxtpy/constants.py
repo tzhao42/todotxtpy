@@ -1,5 +1,17 @@
 """Constants for todotxtpy."""
 
+import os
+
+# Paths
+TODO_DIRECTORY = os.path.join(os.path.expanduser("~"), ".todo") 
+
+CONFIG_PATH = os.path.join(TODO_DIRECTORY, "config")
+TODO_PATH = os.path.join(TODO_DIRECTORY, "todo.txt")
+DONE_PATH = os.path.join(TODO_DIRECTORY, "done.txt")
+
+
+# Colors Sequences
+
 class Colors:
     """ANSI escape sequences for colors."""
 
@@ -26,6 +38,8 @@ class Colors:
     UNDERLINE = "\033[4m"
     ENDC = "\033[0m"
 
+# Config
+
 class DefaultConfig:
     """Default settings."""
 
@@ -40,5 +54,3 @@ class DefaultConfig:
     COLOR_DATE = Colors.LIGHT_PURPLE
     COLOR_NUMBER = Colors.DARK_GREY
 
-    TODO_TXT_PATH = None # Must be overridden
-    DONE_TXT_PATH = None # Must be overridden
