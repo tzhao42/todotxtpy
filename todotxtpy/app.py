@@ -47,6 +47,10 @@ class TodoApp:
     def do_task(self, line_number: str) -> None:
         """Complete a task."""
         idx = int(line_number) - 1
+
+        if not 0 <= idx <= len(self.tasklist.tasks) - 1:
+            raise ValueError("Line number out of range")
+
         task = self.tasklist.tasks.pop(idx)
 
         with open(self.done_path, mode="a") as file:
@@ -64,6 +68,10 @@ class TodoApp:
     def remove_task(self, line_number: str) -> None:
         """Remove a task."""
         idx = int(line_number) - 1
+
+        if not 0 <= idx <= len(self.tasklist.tasks) - 1:
+            raise ValueError("Line number out of range")
+
         self.tasklist.tasks.pop(idx)
 
         self.tasklist.sort()

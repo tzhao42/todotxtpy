@@ -54,6 +54,15 @@ def parse_command(args, app):
         case ["list", "verbose"]:
             app.list(verbose=True)
 
+        case ["help"]:
+            print("Supported operations:\n"
+            + "t add [pri] [tag?] [text]: add task with [priority], possibly a [tag?], and [text]\n"
+            + "t pri [line] [pri]: re-prioritize task on [line] to [priority]\n"
+            + "t do [line]: complete task on [line]\n"
+            + "t rm [line]: remove task on [line], without completing it\n"
+            + "t list: list all tasks, in order of priority, creation date, tag, text, with creation date hidden\n"
+            + "t list verbose: list all tasks, in order of priority, creation date, tag, text, with creation date included\n")
+
         case _:
             raise ValueError("Unrecognized command.")
 

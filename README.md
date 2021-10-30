@@ -17,10 +17,14 @@ Supported operations:
 * `t list verbose`: list all tasks, in order of priority, creation date, tag, text, with creation date included
 
 ## Installation Instructions:
-Requires `python3.10`
+Requires `python3.10`; assumes linux.
 ```
+mkdir ~/todo
+touch ~/todo/config
+touch ~/todo/todo.txt
+touch ~/todo/done.txt
 cd ~
 git clone git@github.com:tzhao42/todotxtpy.git
-echo >> "alias t='python3.10 /home/$USER/todotxtpy/main.py'"
+echo "alias t='python3.10 /home/$USER/todotxtpy/main.py'" >> /home/$USER/.bash_aliases
 ```
 That's it.
