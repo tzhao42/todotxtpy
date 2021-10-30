@@ -1,4 +1,4 @@
-# todotxt-py
+# todotxtpy
 My personal implementation of a todotxt-like CLI, in Python. I use a customized, restricted subset of the todotxt format:
 ```
 [priority] [creation date%] [tag?] [text]
