@@ -3,60 +3,61 @@
 from functools import cmp_to_key
 
 from todotxtpy.constants import DefaultConfig
-from todotxtpy.utils import color_to_color_code
+from todotxtpy.utils import (
+    color_to_color_code,
+    is_valid_date,
+    is_valid_priority,
+    is_valid_tag
+)
 
 
 class Task:
     """Simple task class."""
 
-    def __init__(self, line: str) -> None:
-        """Initialize a Task from the text of a line
-        
-        Expected format is 
-        "[priority] [text] [tag?] [creation date%]"
-        """
-
+    def __init__(self) -> None:
+        """Initialize empty Task."""
         # Type hinting
-        self.priority: str # a single letter
-        self.text: str
-        self.tag: str
-        self.creation_date: str
+        self.priority: str = None  # "([capital letter])"
+        self.creation_date: str = None
+        self.tag: str = None
+        self.text: str = None
 
-        # Parse line
+    def load(self, line: str) -> None:
+        """Populate fields of a Task from the text of a line.
+
+        Expected format is
+        "[priority] [creation date%] [tag?] [text]"
+        """
         tokens = line.split()
 
-        # Recognized priority
-        first_token = tokens.pop(0)
-        match [l for l in first_token]:
-            case ["(", priority, ")"]:
-                if not priority.isupper():
-                    raise ValueError("Unsupported priority.")
-                
-                self.priority = priority
-            case _:
-                raise ValueError("Unrecognized format.")
-        
-        # Recognize creation date
-        last_token = tokens.pop()
-        if len(last_token) == 6 and last_token.isdecimal():
-            self.creation_date = last_token
+        # Recognize priority
+        head = tokens.pop(0)
+        if is_valid_priority(head):
+            self.priority = head
         else:
             raise ValueError("Unrecognized format.")
-        
+
+        # Recognize creation date
+        head = tokens.pop(0)
+        if is_valid_date(head):
+            self.creation_date = head
+        else:
+            raise ValueError("Unrecognized format.")
+
         # Recognize tag, if present
-        self.tag = tokens.pop() if tokens[-1][0] == "+" else None
-        
+        head = tokens[0]
+        if is_valid_tag(head):
+            self.tag = tokens.pop(0)
+
         # Dump rest of text in text field
         self.text = " ".join(tokens)
 
     def __str__(self) -> str:
         # This is used for saving, display is handeled differently
-        ret = ""
-        ret += f"({self.priority}) {self.text} "
+        elements = [self.priority, self.creation_date, self.text]
         if self.tag:
-            ret += self.tag + " "
-        ret += self.creation_date
-        return ret
+            elements.insert(2, self.tag)
+        return " ".join(elements)
 
     def __eq__(self, o: object) -> bool:
         if isinstance(o, self.__class__):
@@ -77,21 +78,23 @@ class TaskList:
         with open(path, mode="r") as file:
             lines = file.readlines()
             for line in lines:
-                task = Task(line.rstrip())
-                self.tasks.append(task)
+                if line != "\n":
+                    task = Task()
+                    task.load(line.rstrip())
+                    self.tasks.append(task)
 
     def save(self, path: str) -> None:
         """Save TaskList to file specified by path.
 
         If file already exists, overwrites file completely.
         """
-        with open(path, mode='w') as f:
+        with open(path, mode="w") as f:
             for task in self.tasks:
                 f.write(f"{str(task)}\n")
 
     def sort(self) -> None:
         """Sort TaskList in order of priority, creation date, tag, text.
-        
+
         Entries without tag come last; otherwise everything is string order.
         """
         self.tasks.sort(key=cmp_to_key(self._compare))
@@ -105,13 +108,7 @@ class TaskList:
         elif task1.priority > task2.priority:
             return 1
 
-        # Priorities equal, compare creation date
-        if task1.creation_date < task2.creation_date:
-            return -1
-        elif task1.creation_date > task2.creation_date:
-            return 1
-
-        # Creation dates equal, compare tags
+        # Priorities equal, compare tag
         if task1.tag and (not task2.tag):
             return -1
         elif (not task1.tag) and task2.tag:
@@ -122,12 +119,18 @@ class TaskList:
             elif task1.tag > task2.tag:
                 return 1
 
+        # Tags equal, compare creation date
+        if task1.creation_date < task2.creation_date:
+            return -1
+        elif task1.creation_date > task2.creation_date:
+            return 1
+
         # Tags equal, compare text
         if task1.text < task2.text:
             return -1
         elif task1.text > task2.text:
             return 1
-        
+
         # Everything equal
         return 0
 
@@ -170,26 +173,32 @@ class Config:
                         self.color_priority_rest = color_to_color_code(color)
                     case ["COLOR_TAG", color]:
                         self.color_tag = color_to_color_code(color)
-                    case ["COLOR_DATA", color]:
-                        self.color_data = color_to_color_code(color)
+                    case ["COLOR_DATE", color]:
+                        self.color_date = color_to_color_code(color)
                     case ["COLOR_NUMBER", color]:
                         self.color_number = color_to_color_code(color)
+                    case ["#", *content]:
+                        # Comment
+                        pass
+                    case []:
+                        # Whitespace
+                        pass
                     case _:
                         print(setting)
                         raise ValueError("Setting not recognized")
 
-        
     def priority_to_color_code(self, priority : str) -> str:
+        """Return color code corresponding to a certain priority."""
         match priority:
-            case "A":
+            case "(A)":
                 return self.color_priority_a
-            case "B":
+            case "(B)":
                 return self.color_priority_b
-            case "C":
+            case "(C)":
                 return self.color_priority_c
-            case "D":
+            case "(D)":
                 return self.color_priority_d
-            case "E":
+            case "(E)":
                 return self.color_priority_e
             case _:
                 return self.color_priority_rest

@@ -9,7 +9,8 @@ def get_current_date():
     """Return date in form of yymmdd."""
     return datetime.datetime.now().strftime("%y%m%d")
 
-def color_to_color_code(color : str) -> str:
+
+def color_to_color_code(color: str) -> str:
     """Convert color to color code."""
     match color:
         case "BLACK" :
@@ -55,5 +56,26 @@ def color_to_color_code(color : str) -> str:
         case _:
             raise ValueError("Unrecognized color.")
 
-if __name__ == "__main__":
-    print(get_current_date())
+
+def is_valid_priority(priority: str) -> bool:
+    """Return whether input is a valid priority."""
+    match [l for l in priority]:
+        case ["(", letter, ")"]:
+            return letter.isupper()
+        case _:
+            return False
+
+
+def is_valid_date(date: str) -> bool:
+    """Return whether input is a valid date."""
+    return len(date) == 6 and date.isdecimal()
+
+
+def is_valid_tag(tag: str) -> bool:
+    """Return whether input is a valid tag."""
+    return len(tag) > 0 and tag[0] == "+"
+
+
+def is_valid_line_number(line_number: str) -> bool:
+    """Return whether input isa valid line number."""
+    return line_number.isdecimal()
