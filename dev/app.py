@@ -116,5 +116,3 @@ class TodoApp:
             display_str += Colors.ENDC
 
             print(display_str)
-
-        self.tasklist.save(self.todo_path)

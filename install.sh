@@ -12,3 +12,4 @@ mv /tmp/todotxtpy/todotxtpy/todotxt.py ~/bin
 
 echo 'export PATH="/home/$USER/bin:$PATH"' >> ~/.bashrc
 echo 'alias t="todotxt.py"' >> ~/.bash_aliases
+

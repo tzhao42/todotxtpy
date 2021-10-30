@@ -446,8 +446,6 @@ class TodoApp:
 
             print(display_str)
 
-        self.tasklist.save(self.todo_path)
-
 
 # Main
 
