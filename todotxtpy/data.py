@@ -2,8 +2,8 @@
 
 from functools import cmp_to_key
 
-from todotxtpy.constants import DefaultConfig
-from todotxtpy.utils import (
+from constants import DefaultConfig
+from utils import (
     color_to_color_code,
     is_valid_date,
     is_valid_priority,

@@ -2,9 +2,9 @@
 
 import sys
 
-from todotxtpy.app import TodoApp
-from todotxtpy.constants import CONFIG_PATH, DONE_PATH, TODO_PATH
-from todotxtpy.utils import is_valid_line_number, is_valid_priority, is_valid_tag
+from app import TodoApp
+from constants import CONFIG_PATH, DONE_PATH, TODO_PATH
+from utils import is_valid_line_number, is_valid_priority, is_valid_tag
 
 
 def parse_command(args, app):

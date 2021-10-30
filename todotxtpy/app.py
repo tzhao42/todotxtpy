@@ -1,8 +1,8 @@
 """App logic for the todotxtpy."""
 
-from todotxtpy.constants import Colors
-from todotxtpy.data import Config, Task, TaskList
-from todotxtpy.utils import get_current_date
+from constants import Colors
+from data import Config, Task, TaskList
+from utils import get_current_date
 
 
 class TodoApp:

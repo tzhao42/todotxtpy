@@ -2,7 +2,7 @@
 
 import datetime
 
-from todotxtpy.constants import Colors
+from constants import Colors
 
 
 def get_current_date():
