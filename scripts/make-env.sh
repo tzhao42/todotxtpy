@@ -19,6 +19,3 @@ pip3 install isort
 pip3 install black
 pip3 install pylint
 pip3 install pytest
-
-# install src
-pip3 install -e .
