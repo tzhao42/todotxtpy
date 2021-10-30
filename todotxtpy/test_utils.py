@@ -2,8 +2,8 @@
 
 import pytest
 
-from todotxtpy.constants import Colors
-from todotxtpy.utils import (
+from constants import Colors
+from utils import (
     color_to_color_code,
     is_valid_date,
     is_valid_line_number,

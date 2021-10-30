@@ -9,9 +9,18 @@ x [priority] [text] [tag?] [creation date] [completion date]
 ```
 
 Supported operations:
-* `t add [pri] [text]`: add task with `[priority]` and `[text]`
+* `t add [pri] [tag?] [text]`: add task with `[priority]`, possibly a `[tag?]`, and `[text]`
 * `t pri [line] [pri]`: re-prioritize task on `[line]` to `[priority]`
 * `t do [line]`: complete task on `[line]`
 * `t rm [line]`: remove task on `[line]`, without completing it
 * `t list`: list all tasks, in order of priority, creation date, tag, text, with creation date hidden
 * `t list verbose`: list all tasks, in order of priority, creation date, tag, text, with creation date included
+
+## Installation Instructions:
+Requires `python3.10`
+```
+cd ~
+git clone git@github.com:tzhao42/todotxtpy.git
+echo >> "alias t='python3.10 /home/$USER/todotxtpy/main.py'"
+```
+That's it.
