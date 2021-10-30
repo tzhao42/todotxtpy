@@ -1,3 +1,5 @@
+#!/bin/python3.10
+
 """The main function."""
 
 import sys
