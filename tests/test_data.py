@@ -5,9 +5,9 @@ import random
 
 import pytest
 
+from todotxtpy.constants import DefaultConfig
 from todotxtpy.data import Config, Task, TaskList
 from todotxtpy.utils import color_to_color_code
-from todotxtpy.constants import DefaultConfig
 
 
 class TestTask:

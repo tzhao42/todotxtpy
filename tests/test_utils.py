@@ -2,6 +2,7 @@
 
 import pytest
 
+from todotxtpy.constants import Colors
 from todotxtpy.utils import (
     color_to_color_code,
     is_valid_date,
@@ -9,7 +10,6 @@ from todotxtpy.utils import (
     is_valid_priority,
     is_valid_tag,
 )
-from todotxtpy.constants import Colors
 
 
 class TestColorToColorcode:

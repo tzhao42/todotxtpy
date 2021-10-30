@@ -7,7 +7,7 @@ from todotxtpy.utils import (
     color_to_color_code,
     is_valid_date,
     is_valid_priority,
-    is_valid_tag
+    is_valid_tag,
 )
 
 
@@ -60,10 +60,7 @@ class Task:
         return " ".join(elements)
 
     def __eq__(self, o: object) -> bool:
-        if isinstance(o, self.__class__):
-            return self.__dict__ == o.__dict__
-        else:
-            return False
+        return isinstance(o, self.__class__) and self.__dict__ == o.__dict__
 
 
 class TaskList:
@@ -88,51 +85,16 @@ class TaskList:
 
         If file already exists, overwrites file completely.
         """
-        with open(path, mode="w") as f:
+        with open(path, mode="w") as file:
             for task in self.tasks:
-                f.write(f"{str(task)}\n")
+                file.write(f"{str(task)}\n")
 
     def sort(self) -> None:
         """Sort TaskList in order of priority, creation date, tag, text.
 
         Entries without tag come last; otherwise everything is string order.
         """
-        self.tasks.sort(key=cmp_to_key(self._compare))
-
-    def _compare(self, task1: Task, task2: Task) -> int:
-        """Custom comparator for sorting tasks."""
-
-        # Compare priorities
-        if task1.priority < task2.priority:
-            return -1
-        elif task1.priority > task2.priority:
-            return 1
-
-        # Priorities equal, compare tag
-        if task1.tag and (not task2.tag):
-            return -1
-        elif (not task1.tag) and task2.tag:
-            return 1
-        elif task1.tag and task2.tag:
-            if task1.tag < task2.tag:
-                return -1
-            elif task1.tag > task2.tag:
-                return 1
-
-        # Tags equal, compare creation date
-        if task1.creation_date < task2.creation_date:
-            return -1
-        elif task1.creation_date > task2.creation_date:
-            return 1
-
-        # Tags equal, compare text
-        if task1.text < task2.text:
-            return -1
-        elif task1.text > task2.text:
-            return 1
-
-        # Everything equal
-        return 0
+        self.tasks.sort(key=cmp_to_key(task_compare))
 
 
 class Config:
@@ -177,7 +139,7 @@ class Config:
                         self.color_date = color_to_color_code(color)
                     case ["COLOR_NUMBER", color]:
                         self.color_number = color_to_color_code(color)
-                    case ["#", *content]:
+                    case ["#", *_]:
                         # Comment
                         pass
                     case []:
@@ -202,3 +164,39 @@ class Config:
                 return self.color_priority_e
             case _:
                 return self.color_priority_rest
+
+
+def task_compare(task1: Task, task2: Task) -> int:
+    """Custom comparator for sorting tasks."""
+
+    # Compare priorities
+    if task1.priority < task2.priority:
+        return -1
+    if task1.priority > task2.priority:
+        return 1
+
+    # Priorities equal, compare tag
+    if task1.tag and (not task2.tag):
+        return -1
+    if (not task1.tag) and task2.tag:
+        return 1
+    if task1.tag and task2.tag:
+        if task1.tag < task2.tag:
+            return -1
+        if task1.tag > task2.tag:
+            return 1
+
+    # Tags equal, compare creation date
+    if task1.creation_date < task2.creation_date:
+        return -1
+    if task1.creation_date > task2.creation_date:
+        return 1
+
+    # Tags equal, compare text
+    if task1.text < task2.text:
+        return -1
+    if task1.text > task2.text:
+        return 1
+
+    # Everything equal
+    return 0

@@ -44,19 +44,24 @@ class TodoApp:
         self.tasklist.sort()
         self.tasklist.save(self.todo_path)
 
-    def do(self, line_number: str) -> None:
+    def do_task(self, line_number: str) -> None:
         """Complete a task."""
         idx = int(line_number) - 1
         task = self.tasklist.tasks.pop(idx)
 
         with open(self.done_path, mode="a") as file:
-            done_task = f"x {task.priority} {task.creation_date} {get_current_date()} {task.tag} {task.text}\n"
+            done_task = "x "
+            done_task += task.priority + " "
+            done_task += task.creation_date + " "
+            done_task += get_current_date() + " "
+            done_task += task.tag + " "
+            done_task += task.text + "\n"
             file.write(done_task)
 
         self.tasklist.sort()
         self.tasklist.save(self.todo_path)
 
-    def rm(self, line_number: str) -> None:
+    def remove_task(self, line_number: str) -> None:
         """Remove a task."""
         idx = int(line_number) - 1
         self.tasklist.tasks.pop(idx)

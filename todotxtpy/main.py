@@ -4,14 +4,11 @@ import sys
 
 from todotxtpy.app import TodoApp
 from todotxtpy.constants import CONFIG_PATH, DONE_PATH, TODO_PATH
-from todotxtpy.utils import (
-    is_valid_line_number,
-    is_valid_priority,
-    is_valid_tag,
-)
+from todotxtpy.utils import is_valid_line_number, is_valid_priority, is_valid_tag
 
 
 def parse_command(args, app):
+    """Parse command from command line."""
     match args:
 
         case ["add", raw_priority, *text]:
@@ -42,14 +39,14 @@ def parse_command(args, app):
             if not is_valid_line_number(line_number):
                 raise ValueError("Unrecognized line number.")
 
-            app.do(line_number)
+            app.do_task(line_number)
 
         case ["rm", line_number]:
 
             if not is_valid_line_number(line_number):
                 raise ValueError("Unrecognized line number.")
 
-            app.rm(line_number)
+            app.remove_task(line_number)
 
         case ["list"]:
             app.list()

@@ -59,7 +59,7 @@ def color_to_color_code(color: str) -> str:
 
 def is_valid_priority(priority: str) -> bool:
     """Return whether input is a valid priority."""
-    match [l for l in priority]:
+    match list(priority):
         case ["(", letter, ")"]:
             return letter.isupper()
         case _:
