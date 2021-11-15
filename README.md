@@ -17,7 +17,7 @@ Supported operations:
 * `t list verbose`: list all tasks, in order of priority, creation date, tag, text, with creation date included
 
 ## Installation Instructions:
-Requires `python3.10`; assumes linux. Install with `./install.sh`. I don't personally install like this but this is the way that I'd recommend for someone else.
+Requires `python3.10`; assumes linux. Install with `./install.sh`.
 
 ## Development
 I work on the source code in `dev/`, then when it is time to deploy I tie everything up into a large executable file (and a large test file) and dump it all into `todotxtpy/`.
