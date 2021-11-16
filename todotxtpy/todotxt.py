@@ -6,7 +6,7 @@ import os
 import sys
 import datetime
 from functools import cmp_to_key
-
+from typing import Optional
 
 # Constants
 
@@ -69,7 +69,7 @@ class Task:
         # Type hinting
         self.priority: str = None  # "([capital letter])"
         self.creation_date: str = None
-        self.tag: str = None
+        self.tag: Optional[str] = None
         self.text: str = None
 
     def load(self, line: str) -> None:
@@ -387,7 +387,8 @@ class TodoApp:
             done_task += task.priority + " "
             done_task += task.creation_date + " "
             done_task += get_current_date() + " "
-            done_task += task.tag + " "
+            if task.tag:
+                done_task += task.tag + " "
             done_task += task.text + "\n"
             file.write(done_task)
 
