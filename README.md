@@ -20,5 +20,5 @@ Supported operations:
 Requires `python3.10`; assumes linux. Install with `./install.sh`.
 
 ## Development
-I work on the source code in `dev/`, then when it is time to deploy I tie everything up into a large executable file (and a large test file) and dump it all into `todotxtpy/`.
+I work on the source code in `dev/`, then when it is time to deploy I tie everything up into a large executable file (and a large test file) and dump it all into `todotxtpy/`. This allows for deployment as a single script without needing a `pip install`. The process of consolidating all the dev files into a large executable is, of course, tedious, and if anyone knows of an automated tool that does this, please let me know!
 
