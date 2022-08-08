@@ -67,21 +67,19 @@ class Task:
         return " ".join(elements)
 
 
+@dataclass
 class TaskList:
     """List of tasks."""
+    tasks: list[Task]
 
-    def __init__(self) -> None:
-        """Initialize a TaskList."""
-        self.tasks: list[Task] = []
-
-    def load(self, path: str) -> None:
+    @classmethod
+    def load(cls, path: str) -> TaskList:
         """Append tasks from file to TaskList."""
         with open(path, mode="r") as file:
             lines = file.readlines()
-            for line in lines:
-                if line != "\n":
-                    task = Task.load(line.rstrip())
-                    self.tasks.append(task)
+            return TaskList([Task.load(line.rstrip())
+                             for line in lines
+                             if line != '\n'])
 
     def save(self, path: str) -> None:
         """Save TaskList to file specified by path.

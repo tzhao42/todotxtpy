@@ -12,8 +12,7 @@ class TodoApp:
         """Initialize the app."""
         self.config = Config()
         self.config.load(config_path)
-        self.tasklist = TaskList()
-        self.tasklist.load(todo_path)
+        self.tasklist = TaskList.load(todo_path)
 
         self.config_path = config_path
         self.todo_path = todo_path

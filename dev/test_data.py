@@ -78,8 +78,7 @@ class TestTaskList:
         with open(path, "w") as file:
             file.write(f"{task_0_raw}\n{task_1_raw}\n")
 
-        task_list = TaskList()
-        task_list.load(path)
+        task_list = TaskList.load(path)
         assert len(task_list.tasks) == 2
         assert str(task_list.tasks[0]) == task_0_raw
         assert str(task_list.tasks[1]) == task_1_raw
@@ -92,9 +91,8 @@ class TestTaskList:
         with open(path, "w") as file:
             file.write(f"{task_0_raw}\n{task_1_raw}\n")
 
-        task_list = TaskList()
         with pytest.raises(ValueError):
-            task_list.load(path)
+            TaskList.load(path)
 
     def test_03_save(self, tmpdir):
         path = os.path.join(tmpdir, "testtodo.txt")
@@ -104,9 +102,7 @@ class TestTaskList:
         task_0 = Task.load(task_0_raw)
         task_1 = Task.load(task_1_raw)
 
-        task_list = TaskList()
-        task_list.tasks.append(task_0)
-        task_list.tasks.append(task_1)
+        task_list = TaskList([task_0, task_1])
 
         task_list.save(path)
 
@@ -131,13 +127,10 @@ class TestTaskList:
         tasks_unsorted = [Task.load(raw) for raw in raws]
         random.shuffle(tasks_unsorted)
 
-        task_list = TaskList()
-        for task in tasks_unsorted:
-            task_list.tasks.append(task)
+        task_list = TaskList(tasks_unsorted)
         task_list.sort()
 
-        for (task_sorted, task_unsorted) in zip(tasks_sorted, task_list.tasks):
-            assert task_sorted == task_unsorted
+        assert tasks_sorted == tasks_unsorted
 
 
 class TestConfig:
