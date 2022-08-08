@@ -1,7 +1,7 @@
 """App logic for the todotxtpy."""
 
 from constants import Colors
-from data import Config, Task, TaskList
+from data import Config, Tag, Task, TaskList
 from utils import get_current_date
 
 
@@ -19,13 +19,9 @@ class TodoApp:
         self.todo_path = todo_path
         self.done_path = done_path
 
-    def add(self, priority: str, tag: str, text: str) -> None:
+    def add(self, priority: str, tag: Tag, text: str) -> None:
         """Process raw output and append onto the task list."""
-        new_task = Task()
-        new_task.priority = priority
-        new_task.creation_date = get_current_date()
-        new_task.tag = tag
-        new_task.text = text
+        new_task = Task(priority, get_current_date(), tag, text)
 
         self.tasklist.tasks.append(new_task)
 
@@ -58,7 +54,8 @@ class TodoApp:
             done_task += task.priority + " "
             done_task += task.creation_date + " "
             done_task += get_current_date() + " "
-            done_task += task.tag + " "
+            if task.tag.tag is not None:
+              done_task += task.tag.tag + " "
             done_task += task.text + "\n"
             file.write(done_task)
 
@@ -103,10 +100,10 @@ class TodoApp:
                 display_str += Colors.ENDC
 
             # Add tag, if exists
-            if task.tag:
+            if task.tag.tag is not None:
                 display_str += " "
                 display_str += self.config.color_tag
-                display_str += task.tag
+                display_str += task.tag.tag
                 display_str += Colors.ENDC
 
             # Add text
