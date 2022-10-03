@@ -1,6 +1,9 @@
 """Data classes for todotxtpy."""
 
-from functools import cmp_to_key
+from __future__ import annotations
+from dataclasses import dataclass
+from functools import total_ordering
+from typing import Optional
 
 from constants import DefaultConfig
 from utils import (
@@ -10,75 +13,73 @@ from utils import (
     is_valid_tag,
 )
 
+# explicitly define Tags as a class for custom ordering
+@total_ordering
+@dataclass
+class Tag:
+    """A tag for a Task."""
+    tag: Optional[str]
 
+    def __gt__(self, other):
+        # None tags sort towards the end
+        if self.tag is None: return True
+        if other.tag is None: return False
+        return self.tag > other.tag
+
+
+@dataclass(order=True)
 class Task:
     """Simple task class."""
+    priority: str # "([capital letter])"
+    creation_date: str
+    tag: Tag
+    text: str
 
-    def __init__(self) -> None:
-        """Initialize empty Task."""
-        # Type hinting
-        self.priority: str = None  # "([capital letter])"
-        self.creation_date: str = None
-        self.tag: str = None
-        self.text: str = None
-
-    def load(self, line: str) -> None:
+    @classmethod
+    def load(cls, line: str) -> Task:
         """Populate fields of a Task from the text of a line.
 
         Expected format is
         "[priority] [creation date%] [tag?] [text]"
         """
-        tokens = line.split()
+        priority, creation_date, *rest = line.split()
 
-        # Recognize priority
-        head = tokens.pop(0)
-        if is_valid_priority(head):
-            self.priority = head
+        if not is_valid_priority(priority):
+            raise ValueError(f"Unrecognized priority {priority}.")
+        if not is_valid_date(creation_date):
+            raise ValueError(f"Unrecognized date {creation_date}.")
+
+        if len(rest) > 0 and is_valid_tag(rest[0]):
+            tag, *text_words = rest
+            text = ' '.join(text_words)
         else:
-            raise ValueError("Unrecognized format.")
+            tag = None
+            text = ' '.join(rest)
 
-        # Recognize creation date
-        head = tokens.pop(0)
-        if is_valid_date(head):
-            self.creation_date = head
-        else:
-            raise ValueError("Unrecognized format.")
+        return Task(priority, creation_date, Tag(tag), text)
 
-        # Recognize tag, if present
-        head = tokens[0]
-        if is_valid_tag(head):
-            self.tag = tokens.pop(0)
-
-        # Dump rest of text in text field
-        self.text = " ".join(tokens)
 
     def __str__(self) -> str:
-        # This is used for saving, display is handeled differently
+        # This is used for saving, display is handled differently
         elements = [self.priority, self.creation_date, self.text]
-        if self.tag:
-            elements.insert(2, self.tag)
+        if self.tag.tag:
+            elements.insert(2, self.tag.tag)
         return " ".join(elements)
 
-    def __eq__(self, o: object) -> bool:
-        return isinstance(o, self.__class__) and self.__dict__ == o.__dict__
 
-
+@dataclass
 class TaskList:
     """List of tasks."""
+    tasks: list[Task]
 
-    def __init__(self) -> None:
-        """Initialize a TaskList."""
-        self.tasks = []
-
-    def load(self, path: str) -> None:
+    @classmethod
+    def load(cls, path: str) -> TaskList:
         """Append tasks from file to TaskList."""
         with open(path, mode="r") as file:
             lines = file.readlines()
-            for line in lines:
-                if line != "\n":
-                    task = Task()
-                    task.load(line.rstrip())
-                    self.tasks.append(task)
+            return TaskList([Task.load(line.rstrip())
+                             for line in lines
+                             if line != '\n'])
 
     def save(self, path: str) -> None:
         """Save TaskList to file specified by path.
@@ -94,7 +95,7 @@ class TaskList:
 
         Entries without tag come last; otherwise everything is string order.
         """
-        self.tasks.sort(key=cmp_to_key(task_compare))
+        self.tasks.sort()
 
 
 class Config:
@@ -164,39 +165,3 @@ class Config:
                 return self.color_priority_e
             case _:
                 return self.color_priority_rest
-
-
-def task_compare(task1: Task, task2: Task) -> int:
-    """Custom comparator for sorting tasks."""
-
-    # Compare priorities
-    if task1.priority < task2.priority:
-        return -1
-    if task1.priority > task2.priority:
-        return 1
-
-    # Priorities equal, compare tag
-    if task1.tag and (not task2.tag):
-        return -1
-    if (not task1.tag) and task2.tag:
-        return 1
-    if task1.tag and task2.tag:
-        if task1.tag < task2.tag:
-            return -1
-        if task1.tag > task2.tag:
-            return 1
-
-    # Tags equal, compare creation date
-    if task1.creation_date < task2.creation_date:
-        return -1
-    if task1.creation_date > task2.creation_date:
-        return 1
-
-    # Tags equal, compare text
-    if task1.text < task2.text:
-        return -1
-    if task1.text > task2.text:
-        return 1
-
-    # Everything equal
-    return 0

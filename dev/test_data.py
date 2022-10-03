@@ -15,67 +15,55 @@ class TestTask:
 
     def test_01_valid_all(self):
         raw = "(A) 211028 +todotxtpy do lots of epic stuff"
-        task = Task()
-        task.load(raw)
+        task = Task.load(raw)
         assert raw == str(task)
 
     def test_02_valid_notag(self):
         raw = "(A) 211028 todotxtpy do lots of epic stuff"
-        task = Task()
-        task.load(raw)
+        task = Task.load(raw)
         assert raw == str(task)
 
     def test_04_invalid_priority(self):
         raw = "[A) 211028 todotxtpy do lots of epic stuff"
         with pytest.raises(ValueError):
-            task = Task()
-            task.load(raw)
+            Task.load(raw)
 
     def test_05_invalid_priority(self):
         raw = "(!) 211028 todotxtpy do lots of epic stuff"
         with pytest.raises(ValueError):
-            task = Task()
-            task.load(raw)
+            Task.load(raw)
 
     def test_06_invalid_priority(self):
         raw = "(a) 211028 todotxtpy do lots of epic stuff"
         with pytest.raises(ValueError):
-            task = Task()
-            task.load(raw)
+            Task.load(raw)
 
     def test_07_invalid_priority(self):
         raw = "(a|]] 211028 todotxtpy do lots of epic stuff"
         with pytest.raises(ValueError):
-            task = Task()
-            task.load(raw)
+            Task.load(raw)
 
     def test_08_invalid_date(self):
         raw = "(A) 21102 todotxtpy do lots of epic stuff todotxtpy"
         with pytest.raises(ValueError):
-            task = Task()
-            task.load(raw)
+            Task.load(raw)
 
     def test_09_invalid_date(self):
         raw = "(A) 21102d todotxtpy do lots of epic stuff todotxtpy"
         with pytest.raises(ValueError):
-            task = Task()
-            task.load(raw)
+            Task.load(raw)
 
     def test_10_equal(self):
         raw = "(A) 211023 +todotxtpy do lots of epic stuff todotxtpy"
-        task_0 = Task()
-        task_0.load(raw)
-        task_1 = Task()
-        task_1.load(raw)
+        task_0 = Task.load(raw)
+        task_1 = Task.load(raw)
         assert task_0 == task_1
 
     def test_10_not_equal(self):
         raw_0 = "(A) 211023 +todotxtpy do lots of epic stuff todotxtpy"
         raw_1 = "(A) 211023 +todotxtpy do bots of epic stuff todotxtpy"
-        task_0 = Task()
-        task_0.load(raw_0)
-        task_1 = Task()
-        task_1.load(raw_1)
+        task_0 = Task.load(raw_0)
+        task_1 = Task.load(raw_1)
         assert task_0 != task_1
 
 
@@ -90,8 +78,7 @@ class TestTaskList:
         with open(path, "w") as file:
             file.write(f"{task_0_raw}\n{task_1_raw}\n")
 
-        task_list = TaskList()
-        task_list.load(path)
+        task_list = TaskList.load(path)
         assert len(task_list.tasks) == 2
         assert str(task_list.tasks[0]) == task_0_raw
         assert str(task_list.tasks[1]) == task_1_raw
@@ -104,23 +91,18 @@ class TestTaskList:
         with open(path, "w") as file:
             file.write(f"{task_0_raw}\n{task_1_raw}\n")
 
-        task_list = TaskList()
         with pytest.raises(ValueError):
-            task_list.load(path)
+            TaskList.load(path)
 
     def test_03_save(self, tmpdir):
         path = os.path.join(tmpdir, "testtodo.txt")
         task_0_raw = "(A) 420420 +tag do things"
         task_1_raw = "(B) 696969 +gat thin"
 
-        task_0 = Task()
-        task_0.load(task_0_raw)
-        task_1 = Task()
-        task_1.load(task_1_raw)
+        task_0 = Task.load(task_0_raw)
+        task_1 = Task.load(task_1_raw)
 
-        task_list = TaskList()
-        task_list.tasks.append(task_0)
-        task_list.tasks.append(task_1)
+        task_list = TaskList([task_0, task_1])
 
         task_list.save(path)
 
@@ -140,23 +122,15 @@ class TestTaskList:
             "(B) 012345 +tag text",
         ]
 
-        tasks_sorted = [Task() for _ in raws]
-        for i, task in enumerate(tasks_sorted):
-            task.load(raws[i])
+        tasks_sorted = [Task.load(raw) for raw in raws]
 
-        tasks_unsorted = [Task() for _ in raws]
-        for i, task in enumerate(tasks_unsorted):
-            task.load(raws[i])
-
+        tasks_unsorted = [Task.load(raw) for raw in raws]
         random.shuffle(tasks_unsorted)
 
-        task_list = TaskList()
-        for task in tasks_unsorted:
-            task_list.tasks.append(task)
+        task_list = TaskList(tasks_unsorted)
         task_list.sort()
 
-        for (task_sorted, task_unsorted) in zip(tasks_sorted, task_list.tasks):
-            assert task_sorted == task_unsorted
+        assert tasks_sorted == tasks_unsorted
 
 
 class TestConfig:
